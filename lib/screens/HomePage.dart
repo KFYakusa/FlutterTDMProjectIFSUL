@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tdm_movies_crud/database/filme_dao.dart';
 import 'package:tdm_movies_crud/models/Filme.dart';
+import 'package:tdm_movies_crud/screens/ChatPage.dart';
 import 'package:tdm_movies_crud/screens/FormMovie.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,64 +14,200 @@ class HomePage extends StatefulWidget {
   }
 }
 
+
 class _HomePageState extends State<HomePage> {
   final filmeDao _dao = new filmeDao();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Center(child: Text("Lista de filmes"))),
-      body: FutureBuilder<List<Filme>>(
-        initialData: [],
-        future: Future.delayed(Duration(seconds: 0))
-            .then((value) => _dao.findAll()),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.active:
-              break;
-            case ConnectionState.waiting:
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(15.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      CircularProgressIndicator(
-                        strokeWidth: 5,
-                        backgroundColor: Theme.of(context).backgroundColor,
-                        valueColor: new AlwaysStoppedAnimation<Color>(Colors.green),
-                      )])));
-            case ConnectionState.done:
-              if (snapshot.data != null) {
-                final List<Filme>? filmesDB = snapshot.data;
-                return ListView.builder(
-                  itemCount: filmesDB!.length,
-                  itemBuilder: (context, index) {
-                    final filme = filmesDB[index];
-                    return ItemFilme(context, filme);
-                  });}
+    return GestureDetector(
+      onVerticalDragUpdate: (details){},
+      onHorizontalDragUpdate: (details){
+        int sensitivity =0;
+        if(details.delta.direction> sensitivity){
+
+          Navigator.of(context).push(
+              PageRouteBuilder(
+                transitionsBuilder: (context, animation,secondaryAnimation,child){
+                  const begin = Offset(1.0, 0.0);
+                  const end = Offset.zero;
+                  final tween =Tween(begin:begin,end:end);
+                  final offsetAnimation = animation.drive(tween);
+                  return SlideTransition(position: offsetAnimation, child:child);
+                },
+                  pageBuilder: (BuildContext context, Animation<double> animation, Animation <double> secondaryAnimation){
+                    return ChatPage();
+                }
+              ));
+        }
+        else if(details.delta.direction < -sensitivity){
+
+        }
+      },
+      child:Scaffold(
+          appBar: AppBar(
+              title: Center(child: Text("Lista de filmes")),
+            actions: [
+                TextButton(
+                    child: Icon(Icons.chat,color: Theme.of(context).backgroundColor, ),
+                    onPressed: (){
+                      Navigator.of(context).push(
+                          PageRouteBuilder(
+                              transitionsBuilder: (context, animation,secondaryAnimation,child){
+                                const begin = Offset(1.0, 0.0);
+                                const end = Offset.zero;
+                                final tween =Tween(begin:begin,end:end);
+                                final offsetAnimation = animation.drive(tween);
+                                return SlideTransition(position: offsetAnimation, child:child);
+                              },
+                              pageBuilder: (BuildContext context, Animation<double> animation, Animation <double> secondaryAnimation){
+                                return ChatPage();
+                              }
+                          ));
+                } )
+            ],
+          ),
+
+          body: FutureBuilder<List<Filme>>(
+            initialData: [],
+            future: Future.delayed(Duration(seconds: 0))
+                .then((value) => _dao.findAll()),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.active:
+                  break;
+                case ConnectionState.waiting:
+                  return Center(
+                      child: Padding(
+                          padding: EdgeInsets.all(15.0),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                CircularProgressIndicator(
+                                  strokeWidth: 5,
+                                  backgroundColor: Theme.of(context).backgroundColor,
+                                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.green),
+                                )])));
+                case ConnectionState.done:
+                  if (snapshot.data != null) {
+                    final List<Filme>? filmesDB = snapshot.data;
+                    return ListView.builder(
+                        itemCount: filmesDB!.length,
+                        itemBuilder: (context, index) {
+                          final filme = filmesDB[index];
+                          return ItemFilme(context, filme);
+                        });}
+                  return Center(child: Text("nenhum filme "));
+                default:
+                  return Center(child: Text("nenhum filme "));
+              }
+              if (snapshot.hasError) {
+                return Center(child: Text("deu erro"));
+              }
               return Center(child: Text("nenhum filme "));
-            default:
-              return Center(child: Text("nenhum filme "));
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text("deu erro"));
-          }
-          return Center(child: Text("nenhum filme "));
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        tooltip: " add new movie",
-        onPressed: () {
-          final Future future =
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return FormMovie();
-          }));
-          future.then((movie) {
-            setState(() {});
-          });}));
+            },
+          ),
+          floatingActionButton: FloatingActionButton(
+              child: Icon(Icons.add),
+              tooltip: "add new movie",
+              onPressed: () {
+                final Future future =
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return FormMovie();
+                }));
+                future.then((movie) {
+                  setState(() {});
+                });})
+        // floatingActionButton: Column(
+        //   mainAxisAlignment: MainAxisAlignment.end,
+        //   children:[
+        //     FloatingActionButton(
+        //         child: Icon(Icons.add),
+        //         tooltip: "add new movie",
+        //         onPressed: () {
+        //           final Future future =
+        //           Navigator.push(context, MaterialPageRoute(builder: (context) {
+        //             return FormMovie();
+        //           }));
+        //           future.then((movie) {
+        //             setState(() {});
+        //           });}),
+        //     FloatingActionButton(
+        //       child: Icon(Icons.chat),
+        //       tooltip: "chat",
+        //       onPressed: (){
+        //         // Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatPage()));
+        //       },
+        //     )
+        //   ]
+        // ),
+      )
+    );
   }
+
+
+
+
+
+//
+// class _HomePageState extends State<HomePage> {
+//   final filmeDao _dao = new filmeDao();
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Center(child: Text("Lista de filmes"))),
+//       body: FutureBuilder<List<Filme>>(
+//         initialData: [],
+//         future: Future.delayed(Duration(seconds: 0))
+//             .then((value) => _dao.findAll()),
+//         builder: (context, snapshot) {
+//           switch (snapshot.connectionState) {
+//             case ConnectionState.active:
+//               break;
+//             case ConnectionState.waiting:
+//               return Center(
+//                 child: Padding(
+//                   padding: EdgeInsets.all(15.0),
+//                   child: Column(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     children: <Widget>[
+//                       CircularProgressIndicator(
+//                         strokeWidth: 5,
+//                         backgroundColor: Theme.of(context).backgroundColor,
+//                         valueColor: new AlwaysStoppedAnimation<Color>(Colors.green),
+//                       )])));
+//             case ConnectionState.done:
+//               if (snapshot.data != null) {
+//                 final List<Filme>? filmesDB = snapshot.data;
+//                 return ListView.builder(
+//                   itemCount: filmesDB!.length,
+//                   itemBuilder: (context, index) {
+//                     final filme = filmesDB[index];
+//                     return ItemFilme(context, filme);
+//                   });}
+//               return Center(child: Text("nenhum filme "));
+//             default:
+//               return Center(child: Text("nenhum filme "));
+//           }
+//           if (snapshot.hasError) {
+//             return Center(child: Text("deu erro"));
+//           }
+//           return Center(child: Text("nenhum filme "));
+//         },
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         child: Icon(Icons.add),
+//         tooltip: " add new movie",
+//         onPressed: () {
+//           final Future future =
+//               Navigator.push(context, MaterialPageRoute(builder: (context) {
+//             return FormMovie();
+//           }));
+//           future.then((movie) {
+//             setState(() {});
+//           });}));
+//   }
 
   Widget ItemFilme(BuildContext context, Filme _filme) {
     final filmeDao _dao = new filmeDao();
