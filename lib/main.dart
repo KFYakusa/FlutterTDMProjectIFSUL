@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:tdm_movies_crud/screens/HomePage.dart';
+import 'package:tdm_movies_crud/screens/LoginPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,16 +17,21 @@ void main() async {
 
 
 
-class FilmesApp extends StatelessWidget {
+class FilmesApp extends StatefulWidget {
+  FilmesApp({Key? key}): super(key:key);
+  @override
+  State<StatefulWidget> createState()=>_FilmesAppState();
+}
 
-  // This widget is the root of your application.
+class _FilmesAppState extends State<FilmesApp>{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData.dark(),
-      home: HomePage(),
+      home: LoginPage(),
     );
   }
+
 }
 
