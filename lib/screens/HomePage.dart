@@ -6,11 +6,12 @@ import 'package:tdm_movies_crud/models/Filme.dart';
 import 'package:tdm_movies_crud/screens/ChatPage.dart';
 import 'package:tdm_movies_crud/screens/FormMovie.dart';
 import 'package:tdm_movies_crud/screens/LoginPage.dart';
+import 'package:tdm_movies_crud/screens/MapPage.dart';
 
 class HomePage extends StatefulWidget {
   User? _user;
   GoogleSignIn? _gglwIn;
-  HomePage({Key? key, User? user, required GoogleSignIn ggleSign}): super(key: key){
+  HomePage({Key? key, User? user, GoogleSignIn? ggleSign}): super(key: key){
     this._user = user;
     this._gglwIn = ggleSign;
   }
@@ -22,7 +23,6 @@ class HomePage extends StatefulWidget {
   }
 }
 
-
 class _HomePageState extends State<HomePage> {
   final filmeDao _dao = new filmeDao();
 
@@ -32,15 +32,7 @@ class _HomePageState extends State<HomePage> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('AlertDialog Title'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: const <Widget>[
-                Text('Gostaria de Sair?'),
-
-              ],
-            ),
-          ),
+          title: const Text('Gostaria de Sair?'),
           actions: <Widget>[
             TextButton(
               child: const Icon(Icons.close),
@@ -52,7 +44,10 @@ class _HomePageState extends State<HomePage> {
               child: const Icon(Icons.exit_to_app, color:Colors.red),
               onPressed: (){
                 FirebaseAuth.instance.signOut();
-                widget._gglwIn!.signOut();
+                if(widget._gglwIn != null){
+                  widget._gglwIn!.signOut();
+                }
+
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginPage()));
               },
             )
@@ -63,7 +58,6 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -71,7 +65,6 @@ class _HomePageState extends State<HomePage> {
       onHorizontalDragUpdate: (details){
         int sensitivity =0;
         if(details.delta.direction> sensitivity){
-
           Navigator.of(context).push(
               PageRouteBuilder(
                 transitionsBuilder: (context, animation,secondaryAnimation,child){
@@ -93,9 +86,15 @@ class _HomePageState extends State<HomePage> {
       child:Scaffold(
           appBar: AppBar(
             leading: widget._user != null ? TextButton(child: Container(height: 40.0,width: 40.0,
-              decoration: BoxDecoration(
+              decoration:  widget._user!.photoURL != null ? BoxDecoration(
                   image: DecorationImage(
-                      image:NetworkImage(widget._user!.photoURL!),
+                      image: NetworkImage(widget._user!.photoURL!),
+                      fit: BoxFit.cover),
+                  shape: BoxShape.circle) : BoxDecoration(
+                color: Colors.white,
+                  image: DecorationImage(
+                      image: AssetImage('assets/imgs/profileUserImage.png'),
+                      colorFilter: ColorFilter.srgbToLinearGamma(),
                       fit: BoxFit.cover),
                   shape: BoxShape.circle),
             ),
@@ -106,7 +105,7 @@ class _HomePageState extends State<HomePage> {
               title: Center(child: Text("Lista de filmes")),
             actions: [
                 TextButton(
-                    child: Icon(Icons.chat,color: Theme.of(context).backgroundColor, ),
+                    child: Icon(Icons.location_on_outlined,color: Theme.of(context).backgroundColor ),
                     onPressed: (){
                       Navigator.of(context).push(
                           PageRouteBuilder(
@@ -118,11 +117,11 @@ class _HomePageState extends State<HomePage> {
                                 return SlideTransition(position: offsetAnimation, child:child);
                               },
                               pageBuilder: (BuildContext context, Animation<double> animation, Animation <double> secondaryAnimation){
-                                return ChatPage(user: widget._user!);
+
+                                return MapPage();
                               }
                           ));
                 } ),
-
             ],
           ),
 
@@ -179,10 +178,6 @@ class _HomePageState extends State<HomePage> {
       )
     );
   }
-
-
-
-
 
   Widget ItemFilme(BuildContext context, Filme _filme) {
     final filmeDao _dao = new filmeDao();
