@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "934310906455",
+    "project_id": "flutter2021-tdm-ifsul",
+    "storage_bucket": "flutter2021-tdm-ifsul.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:934310906455:android:c6faa8a28d907429ee3112",
+        "android_client_info": {
+          "package_name": "com.example.tdm_movies_crud"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "934310906455-dp9ipbtd5228u7aif8stmmi4e555tpec.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tdm_movies_crud",
+            "certificate_hash": "06a5f134c347a33c70fed661de117c4dc556573b"
+          }
+        },
+        {
+          "client_id": "934310906455-m6tct9nkv6e0708016omch20qqlhfd0n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAK5W-S8ye7OTpbOBDz5i9WzTWIP8-knec"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "934310906455-m6tct9nkv6e0708016omch20qqlhfd0n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
